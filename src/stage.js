@@ -1,5 +1,5 @@
 //myScene.js
-var MyLayer = cc.Layer.extend({
+var stageLayer = cc.Layer.extend({
     ctor: function() {
         this._super();
 
@@ -13,9 +13,9 @@ var MyLayer = cc.Layer.extend({
         }
 
 
-        var Title_png = cc.Sprite.create(res.Title_png);
-        Title_png.setPosition(size.width / 2, size.height / 2);
-        this.addChild(Title_png);
+        var stage_png = cc.Sprite.create(res.stageselect_png);
+        stage_png.setPosition(size.width / 2, size.height / 2);
+        this.addChild(stage_png);
         //add code
          //タップイベントリスナーを登録する
         cc.eventManager.addListener({
@@ -38,15 +38,16 @@ var MyLayer = cc.Layer.extend({
         if (audioEngine.isMusicPlaying()) {
           audioEngine.stopMusic();
         }
+        //audioEngine.playEffect("res/se_select16.wav");
         // 次のシーンに切り替える
-        cc.director.runScene(new HowtoScene());
+        cc.director.runScene(new gameScene());
     },
 });
 
-var MyScene = cc.Scene.extend({
+var stageScene = cc.Scene.extend({
     onEnter: function() {
         this._super();
-        var layer = new MyLayer();
+        var layer = new stageLayer();
         this.addChild(layer);
     }
 });
