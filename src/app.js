@@ -4,12 +4,12 @@ var tileSize = 96;
 //1:地面　2:ブロック　3:プレイヤ　4:ゾンビ 5:こうもり　6:銅  7:銀  8:金
 var level = [
    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-   [0, 0, 5, 0, 0, 0, 0, 5, 0, 0],
-   [0, 0, 0, 0, 0, 0, 0, 2, 2, 2],
    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-   [0, 0, 0, 2, 2, 2, 0, 0, 0, 0],
-   [0, 0, 0, 0, 3, 0, 6, 7, 8, 0],
-   [0, 1, 1, 0, 0, 0, 0, 0, 0, 0]
+   [0, 0, 0, 0, 0, 8, 0, 2, 2, 2],
+   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   [0, 2, 0, 2, 3, 0, 0, 0, 0, 0],
+   [0, 0, 0, 0, 0, 0, 5, 6, 7, 0],
+   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
 
 var mylabel;
@@ -44,6 +44,9 @@ var gameScene = cc.Scene.extend({
     gameLayer.init();
     this.addChild(gameLayer);
 
+    var enemy = new knightLayer();
+    this.addChild(enemy);
+
     //音楽再生エンジン
     audioEngine = cc.audioEngine;
   },
@@ -63,9 +66,10 @@ var game = cc.Layer.extend({
     onKeyPressed: function (keyCode, event) {
       rightmove = false;
       leftmove = false;
-      if(keyCode == 38 && onGround == true){//↑
+      if(keyCode == 38  && onGround == true){//↑
         ship.engineOn = true;
         onGround = false;
+        JumpAnima();
         //泳ぐ時のSE
         //audioEngine.playEffect(res.se_swim);
         setTimeout(function(){
@@ -73,16 +77,25 @@ var game = cc.Layer.extend({
        },200);
       }
       if(keyCode == 39){
+
+          WalkAnima();
         rightmove = true;
       }
       if(keyCode == 37){
+
+          WalkAnima();
         leftmove = true;
       }
       if(keyCode == 32){
         attackflg = true;
-        score ++;
-        scoreText.setString("Score:"+score);
+        /*score ++;
+        scoreText.setString("Score:"+score);*/
         console.log("attack");
+      }
+
+      //デバッグ用ゲームオーバー
+      if(keyCode == 13){
+        restartGame();
       }
     },
     onKeyReleased: function(keyCode, event){
@@ -111,22 +124,23 @@ var game = cc.Layer.extend({
     // creates the action with no boundary set
     var sprite = cc.Sprite.create("Ship");
     //var followAction = cc.Follow.create(sprite);
-    var followAction = cc.Follow.create(sprite, cc.rect(0, 0, size.width * 2 - 100, size.height));
-    this.runAction(followAction);
+    /*var followAction = cc.Follow.create(sprite, cc.rect(0, 0, size.width * 2 - 100, size.height));
+    this.runAction(followAction);*/
 
-    scoreText = cc.LabelTTF.create("Score:" +score ,"Stencil Std","50",cc.TEXT_ALIGNMENT_CENTER);
+    /*scoreText = cc.LabelTTF.create("Score:" +score ,"Stencil Std","50",cc.TEXT_ALIGNMENT_CENTER);
     this.addChild(scoreText);
-    scoreText.setPosition(size.width / 2, size.height - 30);
+    scoreText.setPosition(size.width / 2, size.height - 30);*/
+
 
     //scheduleUpdate関数は、描画の都度、update関数を呼び出す
     this.scheduleUpdate();
     //ここからパーティクルの設定
-    emitter = cc.ParticleSun.create();
+    /*emitter = cc.ParticleSun.create();
     this.addChild(emitter, 1);
     var myTexture = cc.textureCache.addImage(res.particle_texture);
     emitter.setTexture(myTexture);
     emitter.setStartSize(2);
-    emitter.setEndSize(4);
+    emitter.setEndSize(4);*/
 
   },
   update: function(dt) {
@@ -136,6 +150,7 @@ var game = cc.Layer.extend({
     ship.updateY();
     if(rightmove == true){
       console.log("右");
+
       ship.setFlippedX(true);
       xSpeed = 5;
       ship.setPosition(ship.getPosition().x + xSpeed, ship.getPosition().y);
@@ -151,6 +166,7 @@ var game = cc.Layer.extend({
       //background.setPosition(background.getPosition().x - xSpeed, background.getPosition().y);
     }
   },
+
 
 });
 /*
@@ -303,38 +319,7 @@ var Ship = cc.Sprite.extend({
     if (this.engineOn) {
       this.ySpeed = gameThrust;
     }
-    if(onGround == false){
-      //ここでパーティクルエフェクトをプレイヤーのすぐ後ろに配置している
-      emitter.setPosition(this.getPosition().x - 25, this.getPosition().y);
-      //バタバタアニメーション
-      /*i+=1;
-      if(i==2){this.initWithFile(res.shrimp02_png);}
-      if(i==3){this.initWithFile(res.shrimp03_png);}
-      if(i==4){this.initWithFile(res.shrimp04_png);}
-      if(i==5){i=1}*/
-
-      var animationframe = [];
-      //スプライトフレームを格納する配列
-      var texture = cc.textureCache.addImage(res.player_frames);
-      for (i = 0; i < 3; i++) {
-          //スプライトフレームを作成
-          var frame = new cc.SpriteFrame.createWithTexture(texture, cc.rect(480 + (96*i), 0, 96, 96));
-          //スプライトフレームを配列に登録
-          animationframe.push(frame);
-      }
-      //スプライトフレームの配列を連続再生するアニメーションの定義
-      var animation = new cc.Animation(animationframe, 0.5);
-      //永久ループのアクションを定義
-      var action = new cc.RepeatForever(new cc.animate(animation));
-      //実行
-      this.runAction(action);
-      this.scheduleUpdate();
-
-    }else {
-      //エンジンOffのときは画面外に配置
-      //this.initWithFile(res.shrimp01_png);
-      emitter.setPosition(this.getPosition().x - 250, this.getPosition().y);
-    }
+    if(onGround == false){}else {}
 
     //無敵モード中の視覚効果
     if (this.invulnerability > 0) {
@@ -345,15 +330,15 @@ var Ship = cc.Sprite.extend({
     this.setPosition(this.getPosition().x, this.getPosition().y + this.ySpeed);
     this.ySpeed += gameGravity;
 
-    if (this.getPosition().y < 30 || this.getPosition().y > 320) {
+    if (this.getPosition().y < 140 || this.getPosition().y > 960) {
         onGround = true;
         this.ySpeed = 0;
     }
 
-    //プレイヤーが画面外にでたら、リスタートさせる
+    ///プレイヤーが画面外にでたら、リスタートさせる
     if (this.getPosition().y < 0 || this.getPosition().y > 320) {
 
-      restartGame();
+    //  restartGame();
     }
   }
 });
@@ -398,6 +383,44 @@ var Player = cc.Sprite.extend({
 function Attack() {
   this.initWithFile();
 
+}
+
+function JumpAnima(){
+  var animationframe = [];
+  //スプライトフレームを格納する配列
+  var texture = cc.textureCache.addImage(res.player_frames);
+  for (jum = 0; jum < 7; jum++) {
+      //スプライトフレームを作成
+      var frame = new cc.SpriteFrame.createWithTexture(texture, cc.rect(96 + (96*jum), 336, 96, 96));
+      //スプライトフレームを配列に登録
+      animationframe.push(frame);
+  }
+  //スプライトフレームの配列を連続再生するアニメーションの定義
+  var animation = new cc.Animation(animationframe, 0.3);
+  //永久ループのアクションを定義
+  var action = /*new cc.RepeatForever(*/new cc.animate(animation);
+  //実行
+  ship.runAction(action);
+  ship.scheduleUpdate();
+}
+
+function WalkAnima(){
+  var animationframe = [];
+  //スプライトフレームを格納する配列
+  var texture = cc.textureCache.addImage(res.player_frames);
+  for (walk = 0; walk < 2; walk++) {
+      //スプライトフレームを作成
+      var frame = new cc.SpriteFrame.createWithTexture(texture, cc.rect(192 + (96*walk), 96, 96, 96));
+      //スプライトフレームを配列に登録
+      animationframe.push(frame);
+  }
+  //スプライトフレームの配列を連続再生するアニメーションの定義
+  var animation = new cc.Animation(animationframe, 0.5);
+  //永久ループのアクションを定義
+  var action = new cc.animate(animation);
+  //実行
+  ship.runAction(action);
+  ship.scheduleUpdate();
 }
 
 //プレイヤーを元の位置に戻して、プレイヤーの変数を初期化する

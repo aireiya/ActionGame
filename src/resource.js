@@ -3,10 +3,17 @@ var res = {
     howtoplay_png:"res/HowToPlay.png",
 
     ground_png: "res/ground_96x96.png",
-    block_png: "res/block96x96.png",
+    block_png: "res/renga.png",
+
+    Knight_frame:"res/knight.png",
+    Slyme_frame:"res/slyme.png",
+    Wolf_frame:"res/wolf.png",
+    Pegasus_frame:"res/Pegasus.png",
+
 
     stageselect_png:"res/stageselect.png",
-    background_png:"res/background.png",
+    background_png:"res/glass.jpg",
+
     uprock_png:"res/rock_above.png",
     underrock_png:"res/rock_under.png",
     up_png:"res/ceiling.png",
@@ -22,17 +29,6 @@ var res = {
     replay_png:"res/replay_button.png",
     Heart_png:"res/heart.png",
 
-    //エビちゃんゾーン
-    shrimp01_png:"res/shrimp01.png",
-    shrimp02_png:"res/shrimp02.png",
-    shrimp03_png:"res/shrimp03.png",
-    shrimp04_png:"res/shrimp04.png",
-    //ここまでエビちゃんゾーン
-
-    //こっから珊瑚ゾーン
-    sangoUp:"res/coral_above.png",
-    sangoDown:"res/coral_under.png",
-    //ここまで珊瑚ゾーン
 
     //こっから音楽
     bgm_title:"res/sound/wave.mp3",

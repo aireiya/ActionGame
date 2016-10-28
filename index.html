@@ -9,6 +9,7 @@
     <script type="text/javascript" src="src/title.js" charset="UTF-8"></script>
     <script type="text/javascript" src="src/howto.js" charset="UTF-8"></script>
     <script type="text/javascript" src="src/stage.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/EnemyKnight.js" charset="UTF-8"></script>
 
 </head>
 <body>
@@ -28,7 +29,7 @@
 
                   cc.LoaderScene.preload(g_resources, function () {
 
-                      cc.director.runScene(new gameScene());
+                      cc.director.runScene(new MyScene());
 
                   }, this);
               };

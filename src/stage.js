@@ -9,7 +9,7 @@ var stageLayer = cc.Layer.extend({
         audioEngine = cc.audioEngine;
         //bgm再生
         if (!audioEngine.isMusicPlaying()) {
-          audioEngine.playMusic(res.bgm_title, true);
+          //audioEngine.playMusic(res.bgm_title, true);
         }
 
 
